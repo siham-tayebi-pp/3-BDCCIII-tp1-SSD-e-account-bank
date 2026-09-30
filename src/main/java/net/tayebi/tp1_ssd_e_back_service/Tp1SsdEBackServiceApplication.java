@@ -1,6 +1,6 @@
 package net.tayebi.tp1_ssd_e_back_service;
 
-import net.tayebi.tp1_ssd_e_back_service.entities.AccountType;
+import net.tayebi.tp1_ssd_e_back_service.enums.AccountType;
 import net.tayebi.tp1_ssd_e_back_service.entities.BankAccount;
 import net.tayebi.tp1_ssd_e_back_service.repositories.BankAccountRepository;
 import org.springframework.boot.CommandLineRunner;

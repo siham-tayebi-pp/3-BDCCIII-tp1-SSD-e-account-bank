@@ -1,11 +1,14 @@
 package net.tayebi.tp1_ssd_e_back_service.entities;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.tayebi.tp1_ssd_e_back_service.enums.AccountType;
 
 import java.util.Date;
 
@@ -20,6 +23,7 @@ public class BankAccount {
     private Date createdAt;
     private double balance;
     private String currency;
-    private  AccountType type;
+    @Enumerated(EnumType.STRING)
+    private AccountType type;
 
 }

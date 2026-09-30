@@ -4,6 +4,7 @@
 
 pis on a cree entities et rpositories pacjages
  et apres bank account clase et accoutn type
+
 ```java
 package net.tayebi.tp1_ssd_e_back_service.entities;
 
@@ -13,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.tayebi.tp1_ssd_e_back_service.enums.AccountType;
 
 import java.util.Date;
 
@@ -22,12 +24,12 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder
 public class BankAccount {
-    @Id
-    private  String id;
-    private Date createdAt;
-    private double balance;
-    private String currency;
-    private  AccountType type;
+ @Id
+ private String id;
+ private Date createdAt;
+ private double balance;
+ private String currency;
+ private AccountType type;
 
 }
 
@@ -62,7 +64,7 @@ auto
 
 package net.tayebi.tp1_ssd_e_back_service;
 
-import net.tayebi.tp1_ssd_e_back_service.entities.AccountType;
+import net.tayebi.tp1_ssd_e_back_service.enums.AccountType;
 import net.tayebi.tp1_ssd_e_back_service.entities.BankAccount;
 import net.tayebi.tp1_ssd_e_back_service.repositories.BankAccountRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -113,3 +115,48 @@ puis on execute
 
 pour graalvm 
 une fois jar genrer on le copie il devient excutable native pour que demarage soit tres rapide
+
+ pusi on entre au url http://localhost:8080/h2-console
+![2.png](images/2.png)
+
+
+et voila on est netre a notre bd 
+![3.png](images/3.png)
+la on voi le type en o et 1 cad on doit le cnhager @enumerated pur que ca se sotjce en dt 
+![4.png](images/4.png)
+
+
+package net.tayebi.tp1_ssd_e_back_service.entities;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.Date;
+
+@Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class BankAccount {
+@Id
+private  String id;
+private Date createdAt;
+private double balance;
+private String currency;
+@Enumerated(EnumType.STRING)
+private  AccountType type;
+
+}
+
+et voila type est en sr 
+![5.png](images/5.png)
+
+on cree pakcage ou directory web avec   account rest conroller
+
