@@ -160,3 +160,46 @@ et voila type est en sr
 
 on cree pakcage ou directory web avec   account rest conroller
 
+
+package net.tayebi.tp1_ssd_e_back_service.web;
+
+
+import lombok.AllArgsConstructor;
+import net.tayebi.tp1_ssd_e_back_service.entities.BankAccount;
+import net.tayebi.tp1_ssd_e_back_service.repositories.BankAccountRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+@AllArgsConstructor
+public class AccountRestController {
+//    @Autowired
+private BankAccountRepository bankAccountRepository;
+@GetMapping("/bankAccounts")
+public List<BankAccount> bankAccounts() {
+return bankAccountRepository.findAll();
+}
+
+    @GetMapping("/bankAccounts/{id}")
+    public BankAccount bankAccount(@PathVariable String id) {
+        return  bankAccountRepository.findById(id).orElseThrow(
+                ()->new RuntimeException(String.format("Bank account with id %s not found", id))
+        );
+    }
+
+
+}
+
+
+on teste dans le site
+http://localhost:8080/bankAccounts
+![6.png](images/6.png)
+
+on tes avec id 
+ ![7.png](images/7.png)
+put modifier tt attribue
+path modifier qu attribut nvoye dans requette
