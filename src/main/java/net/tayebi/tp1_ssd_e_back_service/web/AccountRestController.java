@@ -13,6 +13,7 @@ import java.util.UUID;
 
 @RestController
 @AllArgsConstructor
+@RequestMapping("/api")
 public class AccountRestController {
 //    @Autowired
     private BankAccountRepository bankAccountRepository;

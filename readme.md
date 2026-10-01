@@ -239,4 +239,167 @@ test with put
 ![11.png](images/11.png)
 
 
+ pour  ajouter documemnt swaager on integre la depenndnace
+ spring boot openapi doc maven en pom.xml
+<!-- Source: https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui -->
+<dependency>
+    <groupId>org.springdoc</groupId>
+    <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+    <version>2.6.0</version>
+</dependency>
+
+et on ouvre ce lien ss brwose 
+
+![12.png](images/12.png)
+la on notre api docs qui contneitn notre doc de notre sweb service 
+![13.png](images/13.png)
+ge route est  GET
+/bankAccounts/{id}
+![14.png](images/14.png)
+PUT
+/bankAccounts/{id}
+![15.png](images/15.png)
+
+DELETE
+/bankAccounts/{id}
+![16.png](images/16.png)
+
+GET
+/bankAccounts
+![17.png](images/17.png)
+
+POST
+/bankAccounts
+![18.png](images/18.png)
+voila account addded
+![19.png](images/19.png)
+on peut aussi importer notre api -dcs auto pour teste les route via import et on siasit utrl
+http://localhost:8080/v3/api-docs
+![20.png](images/20.png)
+on test la route ge bank account et voila tt nos bank accounts
+![21.png](images/21.png)
+on test aussi save avec post
+![22.png](images/22.png)
+pour gaphql on graphql schema
+poiur grpc on a profile 
+rmi c interface java
+client quon veut communique avec obk disan il a beosin de ses interfaces c ad un interface qui contoejtn meth etc
+si vosu avez bosin de creer rest api modifier chercher etc san spaser par couche metier la on a spring dtat rets
+on ajoute donc sa depemdnndacezs  spring data restt
+<dependency>
+<groupId>org.springframework.boot</groupId>
+<artifactId>spring-boot-starter-data-rest</artifactId>
+</dependency>
+celle ci va nous permmetter de crer de creer un web servcie genriaue uqi fc avec nimpore quell entite
+et donc on va a respositioer e on ajoute annotaiton rest ressource
+
+package net.tayebi.tp1_ssd_e_back_service.repositories;
+
+import net.tayebi.tp1_ssd_e_back_service.entities.BankAccount;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.data.rest.core.annotation.RestResource;
+
+@RepositoryRestResource
+public interface BankAccountRepository extends JpaRepository<BankAccount, String> {
+
+}
+
+
+pour lui demarre de demarre au debut un server rest full qui permet de gere lentite de type bank account et ca creer tt get post et tt pr defaut
+et poru tester eon va ingnere notre controlelr ou bein le meter dans autre diffen endpoitn vai request mapping
+
+@RequestMapping("/api")
+pour que lui acceeder faut crer /api/endpoints
+
+la on test mais la  cpas mon eb servcie qui a rpeondu maia sspring data
+
+la ya embeded avec accoun all et leur lien poru les y conculeter ca c spring dttat rest
+![23.png](images/23.png)
+come on peut teste pour celui avec rets controller avec /api
+sauf qu avec cleui avec  spring datatrest  on voit mee likns 
+laute nn ya qu dat json
+![24.png](images/24.png)
+on accede au detail diun bank account vai the first link
+http://localhost:8080/bankAccounts/f5e0fed4-f0f4-4c69-a8f2-a2274431b1a4
+![25.png](images/25.png)
+spring dtata erst fait par defait pgaination cad si on fiat on peut voir bank accoutn vpage 1
+http://localhost:8080/bankAccounts?page=0&size=2
+
+la on voit
+qu deux compte avec total eltmes et taotal pages
+{
+"_embedded": {
+"bankAccounts": [
+{
+"_links": {
+"self": {
+"href": "http://localhost:8080/bankAccounts/f5e0fed4-f0f4-4c69-a8f2-a2274431b1a4"
+},
+"bankAccount": {
+"href": "http://localhost:8080/bankAccounts/f5e0fed4-f0f4-4c69-a8f2-a2274431b1a4"
+}
+},
+"createdAt": "2026-10-01T13:31:40.775Z",
+"balance": 44933.525944423,
+"currency": "MAD",
+"type": "CURRENT_ACCOUNT"
+},
+{
+"_links": {
+"self": {
+"href": "http://localhost:8080/bankAccounts/df2195fb-a750-4430-ba95-fb05b278b7f0"
+},
+"bankAccount": {
+"href": "http://localhost:8080/bankAccounts/df2195fb-a750-4430-ba95-fb05b278b7f0"
+}
+},
+"createdAt": "2026-10-01T13:31:40.989Z",
+"balance": 59898.7509383373,
+"currency": "MAD",
+"type": "CURRENT_ACCOUNT"
+}
+]
+},
+"_links": {
+"first": {
+"href": "http://localhost:8080/bankAccounts?page=0&size=2"
+},
+"self": {
+"href": "http://localhost:8080/bankAccounts?page=0&size=2"
+},
+"next": {
+"href": "http://localhost:8080/bankAccounts?page=1&size=2"
+},
+"last": {
+"href": "http://localhost:8080/bankAccounts?page=4&size=2"
+},
+"profile": {
+"href": "http://localhost:8080/profile/bankAccounts"
+}
+},
+"page": {
+"number": 0,
+"size": 2,
+"totalElements": 10,
+"totalPages": 5
+}
+}
+![26.png](images/26.png)
      
+
+on ezysa dajouter dans notre rpeository meth find by curency 
+
+
+    List<BankAccount> findByType(AccountType type);
+puis on test avce  http://localhost:8080/bankAccounts/search/findByTpe?type=CURRENT_ACCOUNT
+et il va nous donnc que accoutns avc currnt saccoutn
+![27.png](images/27.png)
+pusi avec http://localhost:8080/bankAccounts/search/findByType?type=SAVINGS_ACCOUNT
+avings account:
+![28.png](images/28.png)
+mais il affiche le id mais pour se fair eon doi fiare dans le sentites une interfac accoutn projection
+@Projection(types = BankAccount.class)
+et apres on speciife dans linerface ls ettribut id type 
+
+
