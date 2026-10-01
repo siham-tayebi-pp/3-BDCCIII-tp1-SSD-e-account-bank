@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @AllArgsConstructor
@@ -32,19 +33,44 @@ public class AccountRestController {
         bankAccountRepository.deleteById(id);
     }
 
-    @PostMapping("/bankAccountss")
+    @PostMapping("/bankAccounts")
     public BankAccount save(@RequestBody  BankAccount bankAccount) {
+
+        if(bankAccount.getId()==null) bankAccount.setId(UUID.randomUUID().toString());
+        if(bankAccount.getCreatedAt()==null) bankAccount.setCreatedAt(new Date());
         return bankAccountRepository.save(bankAccount);
     }
-    @PutMapping("/bankAccounts/update/{id}")
-    public BankAccount update(@RequestBody  BankAccount bankAccount, @PathVariable String id) {
-        BankAccount account = bankAccountRepository.findById(bankAccount.getId()).orElseThrow(null);
-        if (account.getBalance()!=null) account.setBalance(bankAccount.getBalance());
-        if(account.getCurrency() !=null) account.setCurrency(bankAccount.getCurrency());
-        if(account.getType() !=null) account.setType(bankAccount.getType());
-        if(account.getCreatedAt() !=null) account.setCreatedAt(new Date());
-        return bankAccountRepository.save(account);
+//    @PatchMapping("/bankAccounts/{id}")
+//    public BankAccount update(@PathVariable String id, @RequestBody BankAccount bankAccount) {
+//        BankAccount account = bankAccountRepository.findById(id).orElseThrow();
+//
+//        // Vérifier les champs de bankAccount (la requête JSON)
+//        if (bankAccount.getBalance() != null) account.setBalance(bankAccount.getBalance());
+//        if (bankAccount.getCurrency() != null) account.setCurrency(bankAccount.getCurrency());
+//        if (bankAccount.getType() != null) account.setType(bankAccount.getType());
+//
+//        return bankAccountRepository.save(account);
+//    }
+@PutMapping("/bankAccounts/{id}")
+public BankAccount update(@PathVariable String id, @RequestBody BankAccount bankAccount) {
+    // 1. Charger l'entité existante depuis la BDD (état 'Managed' par JPA)
+    BankAccount account = bankAccountRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException(String.format("Account %s not found", id)));
+
+    // 2. Modifier UNIQUEMENT si la valeur reçue dans la requête n'est pas null
+    if (bankAccount.getBalance() != null) {
+        account.setBalance(bankAccount.getBalance());
     }
+    if (bankAccount.getCurrency() != null) {
+        account.setCurrency(bankAccount.getCurrency());
+    }
+    if (bankAccount.getType() != null) {
+        account.setType(bankAccount.getType());
+    }
+
+    // 3. Sauvegarder
+    return bankAccountRepository.save(account);
+}
 
 
 }

@@ -203,3 +203,40 @@ on tes avec id
  ![7.png](images/7.png)
 put modifier tt attribue
 path modifier qu attribut nvoye dans requette
+
+@DeleteMapping("/bankAccounts/{id}")
+public void deleteAccount(@PathVariable String id) {
+bankAccountRepository.deleteById(id);
+}
+
+    @PostMapping("/bankAccounts")
+    public BankAccount save(@RequestBody  BankAccount bankAccount) {
+        return bankAccountRepository.save(bankAccount);
+    }
+    @PutMapping("/bankAccounts/{id}")
+    public BankAccount update(@RequestBody  BankAccount bankAccount, @PathVariable String id) {
+        BankAccount account = bankAccountRepository.findById(bankAccount.getId()).orElseThrow(null);
+        if (account.getBalance()!=null) account.setBalance(bankAccount.getBalance());
+        if(account.getCurrency() !=null) account.setCurrency(bankAccount.getCurrency());
+        if(account.getType() !=null) account.setType(bankAccount.getType());
+        if(account.getCreatedAt() !=null) account.setCreatedAt(new Date());
+        return bankAccountRepository.save(account);
+    } on a joute ces mth on apsse au test avec postman
+
+on test la route post et   pour save ccomem pos donc headers tq conttnent type  et value quil est app json e dna sbody on met le sodnnes a envoyer
+![8.png](images/8.png)
+on ajoute c apour que lid se genrre auto
+if(bankAccount.getId()==null) bankAccount.setId(UUID.randomUUID().toString());
+
+comme ca voial c bank account bein ajout
+![9.png](images/9.png)
+
+on essaye de update ce bank acocunt via par exple eid de lelt crer 
+
+e route put http://localhost:8080/bankAccounts/bd455e9b-dbf7-4ace-9ee0-eaf473656ada
+test with patch ![10.png](images/10.png)
+test with put
+![11.png](images/11.png)
+
+
+     
