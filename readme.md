@@ -400,6 +400,450 @@ avings account:
 ![28.png](images/28.png)
 mais il affiche le id mais pour se fair eon doi fiare dans le sentites une interfac accoutn projection
 @Projection(types = BankAccount.class)
-et apres on speciife dans linerface ls ettribut id type 
+et apres on speciife dans linerface ls ettribut id type
+ on crere la projction donc
+package net.tayebi.tp1_ssd_e_back_service.entities;
+
+import net.tayebi.tp1_ssd_e_back_service.enums.AccountType;
+import org.springframework.data.rest.core.config.Projection;
+
+@Projection(types = BankAccount.class, name="p1")
+public interface BankAccountProjection {
+public String getId();
+public AccountType getType();
+}
+ca c du sp[ring datat rest]
+on ttest nomrmamlemnt il ne donne pas id et type anais en utsnansn tporjection il va els rtrner aussi  
+la il affiche que id e type 
+![29.png](images/29.png) 
+pour que il affiche l tt on doi mete tt atibut dna sprojection rest data clase
+pour quil affiche que mes attr dans projtion
+mais dan sgrpahql had les champs sotn speciife dans la requete
+
+on met aussi
+package net.tayebi.tp1_ssd_e_back_service.repositories;
+
+import net.tayebi.tp1_ssd_e_back_service.entities.BankAccount;
+import net.tayebi.tp1_ssd_e_back_service.enums.AccountType;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.data.rest.core.annotation.RestResource;
+
+import java.util.List;
+
+@RepositoryRestResource
+public interface BankAccountRepository extends JpaRepository<BankAccount, String> {
+@RestResource(path = "/byType")
+List<BankAccount> findByType(AccountType type);
 
 
+}
+
+la on va teser avec byType au lieu de findByType et t au lieu de tupe comem ca
+package net.tayebi.tp1_ssd_e_back_service.repositories;
+
+import net.tayebi.tp1_ssd_e_back_service.entities.BankAccount;
+import net.tayebi.tp1_ssd_e_back_service.enums.AccountType;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.data.rest.core.annotation.RestResource;
+
+import java.util.List;
+
+@RepositoryRestResource
+public interface BankAccountRepository extends JpaRepository<BankAccount, String> {
+@RestResource(path = "/byType")
+List<BankAccount> findByType(@Param("t")AccountType type);
+
+
+}
+au lieu de http://localhost:8080/bankAccounts/search/findByType?type=SAVINGS_ACCOUNT on va faire
+http://localhost:8080/bankAccounts/search/byType?t=SAVINGS_ACCOUNT
+et voila ca marhce on cree lais pour meth et pour param
+
+![30.png](images/30.png)
+mas jusque maintnen on a pas respecter le snormes e pour se faire on doi utilsie rles dtpos et la couche service
+on cree diretcory service et interface et implemntneations
+
+
+
+package net.tayebi.tp1_ssd_e_back_service.service;
+
+import net.tayebi.tp1_ssd_e_back_service.dtos.BankAccountDTOResponse;
+import net.tayebi.tp1_ssd_e_back_service.dtos.BankAccountRequestDTO;
+import net.tayebi.tp1_ssd_e_back_service.entities.BankAccount;
+import net.tayebi.tp1_ssd_e_back_service.enums.AccountType;
+
+public interface AccountService {
+public BankAccountDTOResponse addAccount(BankAccountRequestDTO bankAccountDTO);
+
+}
+ et on cree les due xlcasse
+package net.tayebi.tp1_ssd_e_back_service.dtos;
+
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import net.tayebi.tp1_ssd_e_back_service.enums.AccountType;
+
+import java.util.Date;
+@Data @AllArgsConstructor
+@NoArgsConstructor @Builder
+public class BankAccountRequestDTO {
+
+    private Double balance;
+    private String currency;
+    private AccountType type;
+}
+
+  pas besoin denvoyer ni id lni crate att
+  package net.tayebi.tp1_ssd_e_back_service.dtos;
+
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import net.tayebi.tp1_ssd_e_back_service.enums.AccountType;
+
+import java.util.Date;
+@Data @AllArgsConstructor @NoArgsConstructor
+@Builder
+public class BankAccountDTOResponse {
+private  String id;
+private Date createdAt;
+private Double balance;
+private String currency;
+private AccountType type;
+}
+ on impelmtmnet notre interface de service
+
+on doi mettre tansactionnael de spring pour ue tt mth soit transactionel
+package net.tayebi.tp1_ssd_e_back_service.service;
+
+import net.tayebi.tp1_ssd_e_back_service.dtos.BankAccountDTOResponse;
+import net.tayebi.tp1_ssd_e_back_service.dtos.BankAccountRequestDTO;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@Transactional
+public class AccountServiceImpl implements AccountService {
+@Override
+public BankAccountDTOResponse addAccount(BankAccountRequestDTO bankAccountDTO) {
+return null;
+}
+}
+on etnnrasnfer entit ne dto
+package net.tayebi.tp1_ssd_e_back_service.service;
+
+import net.tayebi.tp1_ssd_e_back_service.dtos.BankAccountDTOResponse;
+import net.tayebi.tp1_ssd_e_back_service.dtos.BankAccountRequestDTO;
+import net.tayebi.tp1_ssd_e_back_service.entities.BankAccount;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
+import java.util.UUID;
+
+@Service
+@Transactional
+public class AccountServiceImpl implements AccountService {
+@Override
+public BankAccountDTOResponse addAccount(BankAccountRequestDTO bankAccountDTO) {
+BankAccount bankAccount=BankAccount.builder()
+.id(UUID.randomUUID().toString())
+.createdAt(new Date())
+.balance(bankAccountDTO.getBalance())
+.type(bankAccountDTO.getType())
+
+                .build();
+        return null;
+    }
+}
+
+package net.tayebi.tp1_ssd_e_back_service.service;
+
+import net.tayebi.tp1_ssd_e_back_service.dtos.BankAccountDTOResponse;
+import net.tayebi.tp1_ssd_e_back_service.dtos.BankAccountRequestDTO;
+import net.tayebi.tp1_ssd_e_back_service.entities.BankAccount;
+import net.tayebi.tp1_ssd_e_back_service.repositories.BankAccountRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
+import java.util.UUID;
+
+@Service
+@Transactional
+public class AccountServiceImpl implements AccountService {
+@Autowired
+BankAccountRepository bankAccountRepository;
+@Override
+public BankAccountDTOResponse addAccount(BankAccountRequestDTO bankAccountDTO) {
+
+        BankAccount bankAccount=BankAccount.builder()
+                .id(UUID.randomUUID().toString())
+                .createdAt(new Date())
+                .balance(bankAccountDTO.getBalance())
+                .type(bankAccountDTO.getType())
+                .currency(bankAccountDTO.getCurrency())
+
+                .build();
+        BankAccount savedBankAccount=bankAccountRepository.save(bankAccount);
+        BankAccountDTOResponse bankAccountDTOResponse=new BankAccountDTOResponse();
+        bankAccountDTOResponse.setId(savedBankAccount.getId());
+        bankAccountDTOResponse.setBalance(savedBankAccount.getBalance());
+        bankAccountDTOResponse.setType(savedBankAccount.getType());
+        bankAccountDTOResponse.setCurrency(savedBankAccount.getCurrency());
+        bankAccountDTOResponse.setCreatedAt(savedBankAccount.getCreatedAt());
+
+        return bankAccountDTOResponse;
+    }
+}
+on pase anotre notnrolelr pour mdoifier
+
+comme ca
+package net.tayebi.tp1_ssd_e_back_service.web;
+
+
+import lombok.AllArgsConstructor;
+import net.tayebi.tp1_ssd_e_back_service.dtos.BankAccountDTOResponse;
+import net.tayebi.tp1_ssd_e_back_service.dtos.BankAccountRequestDTO;
+import net.tayebi.tp1_ssd_e_back_service.entities.BankAccount;
+import net.tayebi.tp1_ssd_e_back_service.repositories.BankAccountRepository;
+import net.tayebi.tp1_ssd_e_back_service.service.AccountService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+@AllArgsConstructor
+@RequestMapping("/api")
+public class AccountRestController {
+//    @Autowired
+private BankAccountRepository bankAccountRepository;
+private AccountService accountService;
+@GetMapping("/bankAccounts")
+public List<BankAccount> bankAccounts() {
+return bankAccountRepository.findAll();
+}
+
+    @GetMapping("/bankAccounts/{id}")
+    public BankAccount bankAccount(@PathVariable String id) {
+        return  bankAccountRepository.findById(id).orElseThrow(
+                ()->new RuntimeException(String.format("Bank account with id %s not found", id))
+        );
+    }
+
+    @DeleteMapping("/bankAccounts/{id}")
+    public void deleteAccount(@PathVariable String id) {
+        bankAccountRepository.deleteById(id);
+    }
+
+    @PostMapping("/bankAccounts")
+    public BankAccountDTOResponse save(@RequestBody BankAccountRequestDTO bankAccount) {
+
+        return accountService.addAccount(bankAccount);
+    }
+//    @PatchMapping("/bankAccounts/{id}")
+//    public BankAccount update(@PathVariable String id, @RequestBody BankAccount bankAccount) {
+//        BankAccount account = bankAccountRepository.findById(id).orElseThrow();
+//
+//        // Vérifier les champs de bankAccount (la requête JSON)
+//        if (bankAccount.getBalance() != null) account.setBalance(bankAccount.getBalance());
+//        if (bankAccount.getCurrency() != null) account.setCurrency(bankAccount.getCurrency());
+//        if (bankAccount.getType() != null) account.setType(bankAccount.getType());
+//
+//        return bankAccountRepository.save(account);
+//    }
+@PutMapping("/bankAccounts/{id}")
+public BankAccount update(@PathVariable String id, @RequestBody BankAccount bankAccount) {
+// 1. Charger l'entité existante depuis la BDD (état 'Managed' par JPA)
+BankAccount account = bankAccountRepository.findById(id)
+.orElseThrow(() -> new RuntimeException(String.format("Account %s not found", id)));
+
+    // 2. Modifier UNIQUEMENT si la valeur reçue dans la requête n'est pas null
+    if (bankAccount.getBalance() != null) {
+        account.setBalance(bankAccount.getBalance());
+    }
+    if (bankAccount.getCurrency() != null) {
+        account.setCurrency(bankAccount.getCurrency());
+    }
+    if (bankAccount.getType() != null) {
+        account.setType(bankAccount.getType());
+    }
+
+    // 3. Sauvegarder
+    return bankAccountRepository.save(account);
+}
+
+
+}
+ on test
+via swagger
+
+pusi on ajoute mappers
+package net.tayebi.tp1_ssd_e_back_service.mappers;
+
+import net.tayebi.tp1_ssd_e_back_service.dtos.BankAccountDTOResponse;
+import net.tayebi.tp1_ssd_e_back_service.entities.BankAccount;
+import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Component;
+
+@Component
+public class AccountMapper {
+public BankAccountDTOResponse fromBankAccount(BankAccount bankAccount) {
+BankAccountDTOResponse bankAccountDTOResponse = new BankAccountDTOResponse();
+BeanUtils.copyProperties(bankAccount, bankAccountDTOResponse);
+
+        return bankAccountDTOResponse;
+    }
+}
+
+
+on pas ua rest cotroler et on fait pour ajouter le mapper mmepour service 
+
+package net.tayebi.tp1_ssd_e_back_service.service;
+
+import lombok.AllArgsConstructor;
+import net.tayebi.tp1_ssd_e_back_service.dtos.BankAccountDTOResponse;
+import net.tayebi.tp1_ssd_e_back_service.dtos.BankAccountRequestDTO;
+import net.tayebi.tp1_ssd_e_back_service.entities.BankAccount;
+import net.tayebi.tp1_ssd_e_back_service.mappers.AccountMapper;
+import net.tayebi.tp1_ssd_e_back_service.repositories.BankAccountRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
+import java.util.UUID;
+
+@Service
+@Transactional
+@AllArgsConstructor
+public class AccountServiceImpl implements AccountService {
+//    @Autowired
+BankAccountRepository bankAccountRepository;
+AccountMapper accountMapper;
+
+    @Override
+    public BankAccountDTOResponse addAccount(BankAccountRequestDTO bankAccountDTO) {
+
+        BankAccount bankAccount=BankAccount.builder()
+                .id(UUID.randomUUID().toString())
+                .createdAt(new Date())
+                .balance(bankAccountDTO.getBalance())
+                .type(bankAccountDTO.getType())
+                .currency(bankAccountDTO.getCurrency())
+
+                .build();
+        BankAccount savedBankAccount=bankAccountRepository.save(bankAccount);
+//        BankAccountDTOResponse bankAccountDTOResponse=new BankAccountDTOResponse();
+//        bankAccountDTOResponse.setId(savedBankAccount.getId());
+//        bankAccountDTOResponse.setBalance(savedBankAccount.getBalance());
+//        bankAccountDTOResponse.setType(savedBankAccount.getType());
+//        bankAccountDTOResponse.setCurrency(savedBankAccount.getCurrency());
+//        bankAccountDTOResponse.setCreatedAt(savedBankAccount.getCreatedAt());
+
+
+        return accountMapper.fromBankAccount(savedBankAccount);
+    }
+}
+
+
+package net.tayebi.tp1_ssd_e_back_service.web;
+
+
+import lombok.AllArgsConstructor;
+import net.tayebi.tp1_ssd_e_back_service.dtos.BankAccountDTOResponse;
+import net.tayebi.tp1_ssd_e_back_service.dtos.BankAccountRequestDTO;
+import net.tayebi.tp1_ssd_e_back_service.entities.BankAccount;
+import net.tayebi.tp1_ssd_e_back_service.mappers.AccountMapper;
+import net.tayebi.tp1_ssd_e_back_service.repositories.BankAccountRepository;
+import net.tayebi.tp1_ssd_e_back_service.service.AccountService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+@AllArgsConstructor
+@RequestMapping("/api")
+public class AccountRestController {
+//    @Autowired
+private BankAccountRepository bankAccountRepository;
+private AccountService accountService;
+private AccountMapper accountMapper;
+@GetMapping("/bankAccounts")
+public List<BankAccount> bankAccounts() {
+return bankAccountRepository.findAll();
+}
+
+    @GetMapping("/bankAccounts/{id}")
+    public BankAccount bankAccount(@PathVariable String id) {
+        return  bankAccountRepository.findById(id).orElseThrow(
+                ()->new RuntimeException(String.format("Bank account with id %s not found", id))
+        );
+    }
+
+    @DeleteMapping("/bankAccounts/{id}")
+    public void deleteAccount(@PathVariable String id) {
+        bankAccountRepository.deleteById(id);
+    }
+
+    @PostMapping("/bankAccounts")
+    public BankAccountDTOResponse save(@RequestBody BankAccountRequestDTO bankAccount) {
+
+        return accountService.addAccount(bankAccount);
+    }
+//    @PatchMapping("/bankAccounts/{id}")
+//    public BankAccount update(@PathVariable String id, @RequestBody BankAccount bankAccount) {
+//        BankAccount account = bankAccountRepository.findById(id).orElseThrow();
+//
+//        // Vérifier les champs de bankAccount (la requête JSON)
+//        if (bankAccount.getBalance() != null) account.setBalance(bankAccount.getBalance());
+//        if (bankAccount.getCurrency() != null) account.setCurrency(bankAccount.getCurrency());
+//        if (bankAccount.getType() != null) account.setType(bankAccount.getType());
+//
+//        return bankAccountRepository.save(account);
+//    }
+@PutMapping("/bankAccounts/{id}")
+public BankAccount update(@PathVariable String id, @RequestBody BankAccount bankAccount) {
+// 1. Charger l'entité existante depuis la BDD (état 'Managed' par JPA)
+BankAccount account = bankAccountRepository.findById(id)
+.orElseThrow(() -> new RuntimeException(String.format("Account %s not found", id)));
+
+    // 2. Modifier UNIQUEMENT si la valeur reçue dans la requête n'est pas null
+    if (bankAccount.getBalance() != null) {
+        account.setBalance(bankAccount.getBalance());
+    }
+    if (bankAccount.getCurrency() != null) {
+        account.setCurrency(bankAccount.getCurrency());
+    }
+    if (bankAccount.getType() != null) {
+        account.setType(bankAccount.getType());
+    }
+
+    // 3. Sauvegarder
+    return bankAccountRepository.save(account);
+}
+
+
+}
+on teste donc 
+
+comemnt creerr rest api  soit via spirng data rest ou via re contorller
+on put m,aitnnen a uiliser graphql
+ on pase a cree run controlelr qui comemunique abvec web service en utilsianst graph ql

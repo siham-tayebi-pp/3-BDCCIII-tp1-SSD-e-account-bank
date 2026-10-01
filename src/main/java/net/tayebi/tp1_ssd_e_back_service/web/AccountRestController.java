@@ -2,8 +2,12 @@ package net.tayebi.tp1_ssd_e_back_service.web;
 
 
 import lombok.AllArgsConstructor;
+import net.tayebi.tp1_ssd_e_back_service.dtos.BankAccountDTOResponse;
+import net.tayebi.tp1_ssd_e_back_service.dtos.BankAccountRequestDTO;
 import net.tayebi.tp1_ssd_e_back_service.entities.BankAccount;
+import net.tayebi.tp1_ssd_e_back_service.mappers.AccountMapper;
 import net.tayebi.tp1_ssd_e_back_service.repositories.BankAccountRepository;
+import net.tayebi.tp1_ssd_e_back_service.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +21,8 @@ import java.util.UUID;
 public class AccountRestController {
 //    @Autowired
     private BankAccountRepository bankAccountRepository;
+    private AccountService accountService;
+    private AccountMapper accountMapper;
     @GetMapping("/bankAccounts")
     public List<BankAccount> bankAccounts() {
         return bankAccountRepository.findAll();
@@ -35,11 +41,9 @@ public class AccountRestController {
     }
 
     @PostMapping("/bankAccounts")
-    public BankAccount save(@RequestBody  BankAccount bankAccount) {
+    public BankAccountDTOResponse save(@RequestBody BankAccountRequestDTO bankAccount) {
 
-        if(bankAccount.getId()==null) bankAccount.setId(UUID.randomUUID().toString());
-        if(bankAccount.getCreatedAt()==null) bankAccount.setCreatedAt(new Date());
-        return bankAccountRepository.save(bankAccount);
+        return accountService.addAccount(bankAccount);
     }
 //    @PatchMapping("/bankAccounts/{id}")
 //    public BankAccount update(@PathVariable String id, @RequestBody BankAccount bankAccount) {
